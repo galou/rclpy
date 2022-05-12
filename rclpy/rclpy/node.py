@@ -72,7 +72,7 @@ from rclpy.qos_overriding_options import _declare_qos_parameters
 from rclpy.qos_overriding_options import QoSOverridingOptions
 from rclpy.service import Service
 from rclpy.subscription import Subscription
-from rclpy.time_source import TimeSource
+from rclpy.time_source import TimeSource, USE_SIM_TIME_NAME
 from rclpy.timer import Rate
 from rclpy.timer import Timer
 from rclpy.topic_endpoint_info import TopicEndpointInfo
@@ -210,6 +210,7 @@ class Node:
         self._clock = ROSClock()
 
         if automatically_declare_parameters_from_overrides:
+            # internally ignores 'use_sim_time' parameter that will be already declared here
             self.declare_parameters(
                 '',
                 [
@@ -484,7 +485,7 @@ class Node:
             descriptors.update({name: descriptor})
 
         parameters_already_declared = [
-            parameter.name for parameter in parameter_list if parameter.name in self._parameters
+            parameter.name for parameter in parameter_list if parameter.name in self._parameters and parameter.name != USE_SIM_TIME_NAME
         ]
         if any(parameters_already_declared):
             raise ParameterAlreadyDeclaredException(parameters_already_declared)
